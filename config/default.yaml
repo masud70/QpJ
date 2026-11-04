@@ -1,0 +1,95 @@
+experiment:
+  models: [ae, vae, dcgan, wgan_gp, ddpm]
+  seeds: [42, 2026, 1337]
+  results_dir: results
+  device: cuda
+  cudnn_benchmark: false
+  cooldown_s: 120
+  log_every_steps: 100
+
+data:
+  source: celeba            # celeba | synthetic
+  root: data/celeba
+  cache_dir: data/cache
+  image_size: 32
+  center_crop: 178
+  batch_size: 64
+  synthetic_size: 512
+
+model:
+  latent_dim: 128
+  ngf: 64
+  ndf: 64
+
+ae:
+  lr: 2.0e-4
+  betas: [0.5, 0.999]
+  fit_samples: 20000
+
+vae:
+  lr: 2.0e-4
+  betas: [0.5, 0.999]
+  beta: 1.0
+  decoder_var: 0.5
+
+dcgan:
+  lr: 2.0e-4
+  betas: [0.5, 0.999]
+
+wgan_gp:
+  lr: 1.0e-4
+  betas: [0.0, 0.9]
+  n_critic: 5
+  lambda_gp: 10.0
+
+ddpm:
+  ch: 128
+  ch_mult: [1, 2, 2, 2]
+  num_res_blocks: 2
+  attn_resolutions: [16]
+  dropout: 0.1
+  T: 1000
+  beta_start: 1.0e-4
+  beta_end: 0.02
+  lr: 2.0e-4
+  betas: [0.9, 0.999]
+  warmup_steps: 5000
+  grad_clip: 1.0
+  ema_decay: 0.9999
+  final_sampler: ancestral
+  eval_sampler: ddim_100
+  inference_samplers: [ancestral, ddim_100]
+
+stopping:
+  mode: fixed_budget                        # fixed_budget | target_quality
+  fixed_budget:
+    budget: {unit: epochs, value: 30}       # epochs | steps | images | wall_clock_s | energy_j
+    segment: {unit: epochs, value: 1}
+  target_quality:
+    target_fid: 25.0
+    eval_every: {unit: epochs, value: 1}
+    fid_samples: 5000
+    max_budget: {unit: epochs, value: 100}
+
+evaluation:
+  fid_ref_samples: 50000
+  fid_samples: 10000
+  batch_size: 250
+  inference_images: 1000
+  inference_min_s: 30
+
+energy:
+  backend: native           # native | codecarbon | codegreen
+  idle_baseline_s: 60
+  gpu_index: 0              # NVML device index
+  ram_w_per_gb: 0.375       # RAM estimate when no DRAM counter exists
+  native:
+    rapl_root: /sys/class/powercap
+    poll_s: 0.5
+  codecarbon:
+    measure_power_secs: 1
+    tracking_mode: machine
+    country_iso_code: CAN
+    region: manitoba
+  codegreen:
+    sample_interval_ms: 100

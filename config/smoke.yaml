@@ -1,0 +1,46 @@
+experiment:
+  seeds: [42]
+  results_dir: results_smoke
+  device: cpu
+  cooldown_s: 0
+  log_every_steps: 5
+
+data:
+  source: synthetic
+  cache_dir: data/cache_smoke
+  batch_size: 16
+  synthetic_size: 256
+
+model:
+  latent_dim: 16
+  ngf: 16
+  ndf: 16
+
+ae:
+  fit_samples: 128
+
+ddpm:
+  ch: 32
+  ch_mult: [1, 2]
+  T: 50
+  warmup_steps: 10
+  eval_sampler: ddim_10
+  inference_samplers: [ancestral, ddim_10]
+
+stopping:
+  fixed_budget:
+    budget: {unit: epochs, value: 2}
+  target_quality:
+    target_fid: 1.0
+    fid_samples: 64
+    max_budget: {unit: epochs, value: 2}
+
+evaluation:
+  fid_ref_samples: 256
+  fid_samples: 64
+  batch_size: 32
+  inference_images: 32
+  inference_min_s: 1
+
+energy:
+  idle_baseline_s: 1
