@@ -20,6 +20,7 @@ class WGANGP(Method):
         self.g = Generator(self.latent, m["ngf"], self.size).to(device)
         self.critic = Critic(m["ndf"], self.size).to(device)
         self.optimizers = [adam(self.g.parameters(), self.c), adam(self.critic.parameters(), self.c)]
+        self.batches_per_step = self.c["n_critic"]
 
     def networks(self):
         return {"generator": self.g, "critic": self.critic}
@@ -37,5 +38,5 @@ class WGANGP(Method):
         return {"loss_g": loss_g.detach(), "loss_c": loss_c.detach(), "gp": gp.detach()}
 
     @torch.no_grad()
-    def sample(self, n, sampler="direct"):
+    def sample(self, n, sampler="direct", progress=False):
         return self.g(self.noise(n))

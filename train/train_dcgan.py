@@ -31,5 +31,5 @@ class DCGAN(Method):
         return {"loss_g": loss_g.detach(), "loss_d": loss_d.detach()}
 
     @torch.no_grad()
-    def sample(self, n, sampler="direct"):
+    def sample(self, n, sampler="direct", progress=False):
         return self.g(self.noise(n))

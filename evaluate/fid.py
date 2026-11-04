@@ -4,6 +4,7 @@ import torch
 from torchmetrics.image.fid import FrechetInceptionDistance
 
 from data.celeba_loader import load_images
+from utils.display import bar, log
 
 
 class FID:
@@ -14,8 +15,9 @@ class FID:
         self.device, self.batch_size = device, batch_size
 
     @torch.no_grad()
-    def stats(self, images):
-        feats = torch.cat([self.net(b.to(self.device)).double().cpu() for b in images.split(self.batch_size)])
+    def stats(self, images, desc=None):
+        batches = bar(images.split(self.batch_size), show=desc is not None, desc=desc, unit="batch", leave=False)
+        feats = torch.cat([self.net(b.to(self.device)).double().cpu() for b in batches])
         return feats.mean(0), torch.cov(feats.T)
 
     def score(self, images, ref):
@@ -32,5 +34,6 @@ def reference_stats(cfg, fid):
         images = load_images(cfg, "train")
         idx = torch.randperm(len(images), generator=torch.Generator().manual_seed(0))[:n]
         path.parent.mkdir(parents=True, exist_ok=True)
-        torch.save(fid.stats(images[idx]), path)
+        torch.save(fid.stats(images[idx], desc=f"FID reference ({len(idx):,} images)"), path)
+        log.info(f"FID reference statistics cached: {path}")
     return torch.load(path)

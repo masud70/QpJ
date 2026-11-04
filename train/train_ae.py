@@ -36,5 +36,5 @@ class AE(Method):
         return self.net(x)
 
     @torch.no_grad()
-    def sample(self, n, sampler="direct"):
+    def sample(self, n, sampler="direct", progress=False):
         return self.net.decoder(self.prior.sample((n,)))

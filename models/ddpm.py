@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from utils.display import bar
+
 
 def timestep_embedding(t, dim):
     half = dim // 2
@@ -153,10 +155,10 @@ class Diffusion:
         return ((x - (1 - ab).sqrt() * eps) / ab.sqrt()).clamp(-1, 1), eps
 
     @torch.no_grad()
-    def sample(self, model, n, image_size, device, sampler="ancestral"):
+    def sample(self, model, n, image_size, device, sampler="ancestral", progress=False):
         x = torch.randn(n, 3, image_size, image_size, device=device)
         if sampler == "ancestral":
-            for i in reversed(range(self.T)):
+            for i in bar(reversed(range(self.T)), progress, total=self.T, desc="  denoising", unit="step", leave=False):
                 t = torch.full((n,), i, device=device, dtype=torch.long)
                 x0, _ = self.predict_x0(model, x, t)
                 x = self.coef_x0[i] * x0 + self.coef_xt[i] * x
@@ -164,7 +166,8 @@ class Diffusion:
                     x = x + self.var_large[i].sqrt() * torch.randn_like(x)
             return x
         seq = torch.linspace(0, self.T - 1, self.steps(sampler)).round().long().tolist()
-        for i, j in zip(reversed(seq), reversed([-1] + seq[:-1])):
+        pairs = list(zip(reversed(seq), reversed([-1] + seq[:-1])))
+        for i, j in bar(pairs, progress, desc="  denoising", unit="step", leave=False):
             t = torch.full((n,), i, device=device, dtype=torch.long)
             x0, eps = self.predict_x0(model, x, t)
             ab_prev = self.ab[j] if j >= 0 else torch.tensor(1.0, device=device)

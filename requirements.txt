@@ -9,3 +9,4 @@ pillow>=10.0
 codecarbon>=3.0
 codegreen>=0.4.9
 pyarrow>=14.0
+tqdm>=4.60

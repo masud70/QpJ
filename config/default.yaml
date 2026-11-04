@@ -86,7 +86,7 @@ energy:
   ram_w_per_gb: 0.375       # RAM estimate when no DRAM counter exists
   native:
     rapl_root: /sys/class/powercap
-    poll_s: 0.5
+    poll_s: 0.05            # counter-read interval; minimum 0.05 (lower adds CPU overhead, no accuracy gain)
   codecarbon:
     measure_power_secs: 1
     tracking_mode: machine

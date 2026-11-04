@@ -10,6 +10,7 @@ import torch.nn.functional as F
 from PIL import Image
 
 from data.download import download
+from utils.display import bar, log
 
 
 def to_float(images):
@@ -30,11 +31,15 @@ def _load_image(data, crop, size):
 
 def _build_celeba(data, split):
     download(data["root"], data["hf_revision"])
+    shards = sorted((Path(data["root"]) / "parquet").glob(f"{split}-*.parquet"))
+    total = sum(pq.ParquetFile(s).metadata.num_rows for s in shards)
     arrays, load = [], partial(_load_image, crop=data["center_crop"], size=data["image_size"])
-    with ProcessPoolExecutor() as pool:
-        for shard in sorted((Path(data["root"]) / "parquet").glob(f"{split}-*.parquet")):
+    with ProcessPoolExecutor() as pool, bar(total=total, desc=f"Caching {split} split", unit="img") as pbar:
+        for shard in shards:
             images = pq.read_table(shard, columns=["image"]).column("image").to_pylist()
-            arrays += pool.map(load, [img["bytes"] for img in images], chunksize=256)
+            for array in pool.map(load, [img["bytes"] for img in images], chunksize=256):
+                arrays.append(array)
+                pbar.update()
     return torch.from_numpy(np.stack(arrays))
 
 
@@ -52,6 +57,7 @@ def load_images(cfg, split="train"):
     if not cache.exists():
         cache.parent.mkdir(parents=True, exist_ok=True)
         torch.save(_build_celeba(data, split), cache)
+        log.info(f"Cached {split} split: {cache}")
     return torch.load(cache)
 
 

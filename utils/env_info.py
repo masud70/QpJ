@@ -38,6 +38,13 @@ def gpu_info(index):
             "gpu_max_sm_clock_mhz": fields[2], "gpu_temperature_c": fields[3]}
 
 
+def gpu_summary(index):
+    """GPU description via nvidia-smi only, so the calling process never creates a CUDA context."""
+    query = run(["nvidia-smi", f"--id={index}", "--format=csv,noheader",
+                 "--query-gpu=name,memory.total,driver_version"])
+    return " · ".join(query.split(", ")[:2]) + f" · driver {query.split(', ')[2]}" if query else None
+
+
 def environment(cfg):
     backend = cfg["energy"]["backend"]
     dirty = run(["git", "status", "--porcelain"])

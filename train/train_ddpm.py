@@ -44,5 +44,5 @@ class DDPM(Method):
                 e.lerp_(p, 1 - self.c["ema_decay"])
         return {"loss": loss.detach()}
 
-    def sample(self, n, sampler):
-        return self.diffusion.sample(self.ema, n, self.size, self.device, sampler)
+    def sample(self, n, sampler, progress=False):
+        return self.diffusion.sample(self.ema, n, self.size, self.device, sampler, progress)

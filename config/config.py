@@ -48,6 +48,8 @@ def validate(cfg):
     for b in budgets[1:3]:
         if b["unit"] == "energy_j":
             raise ValueError("Segment and eval_every units cannot be energy_j")
+    if cfg["energy"]["native"]["poll_s"] < 0.05:
+        raise ValueError("energy.native.poll_s must be >= 0.05 s")
 
 
 def load_config(path=None, overrides=()):

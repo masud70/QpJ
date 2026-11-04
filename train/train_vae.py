@@ -30,5 +30,5 @@ class VAE(Method):
         return self.net.decoder(self.net.encoder(x).chunk(2, dim=1)[0])
 
     @torch.no_grad()
-    def sample(self, n, sampler="direct"):
+    def sample(self, n, sampler="direct", progress=False):
         return self.net.decoder(self.noise(n))

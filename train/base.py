@@ -16,6 +16,7 @@ class Method:
 
     samplers = ["direct"]
     eval_sampler = "direct"
+    batches_per_step = 1
 
     def __init__(self, cfg, device):
         self.cfg, self.device = cfg, device
@@ -28,7 +29,7 @@ class Method:
     def train_step(self, next_batch):
         raise NotImplementedError
 
-    def sample(self, n, sampler):
+    def sample(self, n, sampler, progress=False):
         raise NotImplementedError
 
     def network_calls(self, sampler):
