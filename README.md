@@ -54,6 +54,7 @@ python run_all.py analyze --backend native --stopping fixed_budget # tables and 
 |---|---|---|
 | `--backend` | `native`, `codecarbon`, `codegreen` | `energy.backend` (`native`) |
 | `--stopping` | `fixed_budget`, `target_quality` | `stopping.mode` (`fixed_budget`) |
+| `--target-fid` | number; `target_quality` only | `stopping.target_quality.target_fid` (25) |
 | `--models` | any of `ae vae dcgan wgan_gp ddpm` | all five |
 | `--seeds` | integers, space separated | `42 2026 1337` |
 | `--config` | YAML file merged over `config/default.yaml` | none |
@@ -94,7 +95,8 @@ PDFs of the papers behind each model and method are kept locally in `papers/`, w
 ## Outputs
 
 ```
-results/<stopping>__<backend>/
+results/fixed_budget__<backend>/                 fixed budget
+results/target_quality_fid<target>__<backend>/   target quality, one folder per target FID (e.g. target_quality_fid30__native)
   runs/<model>/seed<k>/
     config.yaml           resolved config used
     run.json              summary: environment, capacity, progress, idle power, energy per phase, quality, QpJ, inference

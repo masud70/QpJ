@@ -248,7 +248,9 @@ def train_run(run_dir):
 
 
 def group_dir(cfg):
-    return Path(cfg["experiment"]["results_dir"]) / f"{cfg['stopping']['mode']}__{cfg['energy']['backend']}"
+    mode = cfg["stopping"]["mode"]
+    target = f"_fid{cfg['stopping']['target_quality']['target_fid']:g}" if mode == "target_quality" else ""
+    return Path(cfg["experiment"]["results_dir"]) / f"{mode}{target}__{cfg['energy']['backend']}"
 
 
 def read_run(run_dir):
