@@ -22,36 +22,33 @@ Every model uses the canonical architecture and hyperparameters of its original 
 
 ## Setup
 
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-**Dataset.** Download *Align&Cropped Images* and `list_eval_partition.txt` from the [CelebA page](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html), then arrange them as follows:
-
-```
-data/celeba/
-  img_align_celeba/000001.jpg ...
-  list_eval_partition.txt
-```
-
-**One-time Linux sensor setup** (only for the backend you use):
+On the Linux GPU machine, run:
 
 ```bash
-sudo chmod -R a+r /sys/class/powercap/intel-rapl*    # native: RAPL counters are root-only by default
-sudo codegreen init-sensors                          # codegreen
+bash setup.sh
 ```
 
-The `chmod` does not persist across reboots. Add a udev rule if you need it to.
+The script is safe to re-run. Steps that are already done are skipped. It does the following:
+
+1. Checks the Python version, the GPU and free disk space (about 15 GB is needed).
+2. Creates `.venv` and installs PyTorch for CUDA 11.8 plus `requirements.txt`. For a different CUDA build, set `TORCH_INDEX=https://download.pytorch.org/whl/<cuXXX>`.
+3. Makes the RAPL energy counters readable with `sudo chmod`. This lasts until the next reboot, so re-run `setup.sh` after rebooting. Nothing permanent is changed on the system. In particular, `codegreen init-sensors` is not used, because it installs a udev rule and a user group.
+4. Downloads CelebA and builds the caches (`python run_all.py prepare`).
+5. Runs `check` for every backend and saves the output to `results/setup_checks/<backend>.txt`.
+
+**Dataset.** The official aligned and cropped CelebA images are downloaded from the Hugging Face mirror [`flwrlabs/celeba`](https://huggingface.co/datasets/flwrlabs/celeba). The files are PNGs in Parquet format, using the official splits: 162,770 train and 19,962 test. The download is pinned to revision `data.hf_revision`, which makes it byte-identical on every machine. Only the train and test shards are downloaded (10.6 GB) into `data/celeba/parquet/`. Any later command that needs the data downloads it automatically if it's missing.
 
 ## Usage
 
 ```bash
-python run_all.py check   --backend native                        # 1. confirm which components are measured
-python run_all.py prepare                                         # 2. cache 32×32 data + FID reference statistics
-python run_all.py train   --backend native --stopping fixed_budget # 3. all models × all seeds
-python run_all.py analyze --backend native --stopping fixed_budget # 4. tables and plots
+source .venv/bin/activate
+python run_all.py check   --backend native                        # confirm which components are measured
+python run_all.py prepare                                         # download data, cache 32×32 + FID reference statistics
+python run_all.py train   --backend native --stopping fixed_budget # all models × all seeds
+python run_all.py analyze --backend native --stopping fixed_budget # tables and plots
 ```
+
+`setup.sh` already runs `check` and `prepare`.
 
 | Flag | Values | Default |
 |---|---|---|
@@ -119,7 +116,7 @@ results/<stopping>__<backend>/
 
 ## Recommended first session on a new machine
 
-1. Run `python run_all.py check --backend <backend>` and confirm `measured` is `True` for CPU and GPU.
-2. Run `python run_all.py prepare`. It decodes about 180k images once and computes the reference statistics.
+1. Run `bash setup.sh`.
+2. In `results/setup_checks/*.txt`, confirm that `measured` is `True` for CPU and GPU.
 3. Run `python run_all.py train --models dcgan --seeds 42 --set experiment.results_dir=results_timing --set stopping.fixed_budget.budget="{unit: epochs, value: 1}"` as a timing check. It writes to a separate folder, so the real results stay clean.
 4. Launch the full suite inside `tmux` or `nohup`.

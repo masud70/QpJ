@@ -9,7 +9,8 @@ experiment:
 
 data:
   source: celeba            # celeba | synthetic
-  root: data/celeba
+  root: data/celeba         # Parquet shards are downloaded here automatically
+  hf_revision: 2d738f56e0e7f925ea36ae7c808ea925264aacec   # pinned flwrlabs/celeba revision
   cache_dir: data/cache
   image_size: 32
   center_crop: 178

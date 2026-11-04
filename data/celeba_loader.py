@@ -1,13 +1,15 @@
+import io
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 from pathlib import Path
 
 import numpy as np
+import pyarrow.parquet as pq
 import torch
 import torch.nn.functional as F
 from PIL import Image
 
-SPLITS = {"train": "0", "valid": "1", "test": "2"}
+from data.download import download
 
 
 def to_float(images):
@@ -18,20 +20,21 @@ def to_uint8(images):
     return ((images.clamp(-1, 1) + 1) * 127.5).round().to(torch.uint8)
 
 
-def _load_image(path, crop, size):
-    img = Image.open(path).convert("RGB")
+def _load_image(data, crop, size):
+    img = Image.open(io.BytesIO(data)).convert("RGB")
     w, h = img.size
     left, top = (w - crop) // 2, (h - crop) // 2
     img = img.crop((left, top, left + crop, top + crop)).resize((size, size), Image.BILINEAR)
     return np.asarray(img).transpose(2, 0, 1)
 
 
-def _build_celeba(root, split, crop, size):
-    rows = (Path(root) / "list_eval_partition.txt").read_text().split("\n")
-    names = [r.split()[0] for r in rows if r.strip() and r.split()[1] == SPLITS[split]]
-    paths = [Path(root) / "img_align_celeba" / n for n in names]
+def _build_celeba(data, split):
+    download(data["root"], data["hf_revision"])
+    arrays, load = [], partial(_load_image, crop=data["center_crop"], size=data["image_size"])
     with ProcessPoolExecutor() as pool:
-        arrays = list(pool.map(partial(_load_image, crop=crop, size=size), paths, chunksize=512))
+        for shard in sorted((Path(data["root"]) / "parquet").glob(f"{split}-*.parquet")):
+            images = pq.read_table(shard, columns=["image"]).column("image").to_pylist()
+            arrays += pool.map(load, [img["bytes"] for img in images], chunksize=256)
     return torch.from_numpy(np.stack(arrays))
 
 
@@ -48,7 +51,7 @@ def load_images(cfg, split="train"):
     cache = Path(data["cache_dir"]) / f"celeba_{split}_{data['image_size']}.pt"
     if not cache.exists():
         cache.parent.mkdir(parents=True, exist_ok=True)
-        torch.save(_build_celeba(data["root"], split, data["center_crop"], data["image_size"]), cache)
+        torch.save(_build_celeba(data, split), cache)
     return torch.load(cache)
 
 
