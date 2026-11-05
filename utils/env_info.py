@@ -16,6 +16,12 @@ def run(cmd):
         return None
 
 
+def require_gpu(cfg):
+    if cfg["experiment"]["device"].startswith("cuda") and not torch.cuda.is_available():
+        raise SystemExit("experiment.device is 'cuda' but PyTorch sees no GPU. Check the NVIDIA driver and the "
+                         "PyTorch CUDA build, or run with --set experiment.device=cpu.")
+
+
 def ram_gb():
     return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / 1024 ** 3
 

@@ -39,7 +39,7 @@ def countdown(seconds, desc):
 
 def row(label, text, width=100):
     lines = textwrap.wrap(str(text), width - 11, break_on_hyphens=False, break_long_words=False) or [""]
-    log.info(f"{label:<11}{lines[0]}")
+    log.info(f"{label:<10} {lines[0]}")
     for line in lines[1:]:
         log.info(f"{'':<11}{line}")
 

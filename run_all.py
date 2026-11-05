@@ -47,16 +47,11 @@ def config_from(args):
     return load_config(args.config, overrides)
 
 
-def require_gpu(cfg):
-    if cfg["experiment"]["device"].startswith("cuda") and not torch.cuda.is_available():
-        raise SystemExit("experiment.device is 'cuda' but PyTorch sees no GPU. Check the NVIDIA driver and the "
-                         "PyTorch CUDA build, or run with --set experiment.device=cpu.")
-
-
 def prepare(cfg):
     from data.celeba_loader import load_images
     from evaluate.fid import FID, reference_stats
     from utils.display import log, row
+    from utils.env_info import require_gpu
     require_gpu(cfg)
     log.info("Quality per Joule v2 · prepare")
     row("Data", f"{cfg['data']['source']} → {cfg['data']['root']}")
@@ -71,7 +66,7 @@ def check(cfg, seconds=10):
     from evaluate.evaluate import sync
     from utils.display import bar, log, row
     from utils.energy import make_meter
-    from utils.env_info import environment
+    from utils.env_info import environment, require_gpu
     require_gpu(cfg)
     device = cfg["experiment"]["device"]
     log.info(f"Quality per Joule v2 · check · {cfg['energy']['backend']} backend")
@@ -79,21 +74,14 @@ def check(cfg, seconds=10):
         row(key, value)
     meter = make_meter(cfg, Path(cfg["experiment"]["results_dir"]) / f"check__{cfg['energy']['backend']}")
     x = torch.randn(2048, 2048, device=device)
-
-    def work(label):
+    for label in ("idle", "load"):
+        meter.begin(label)
         for _ in bar(range(seconds), desc=f"Measuring {label}", leave=False,
                      bar_format="{desc}: {bar} {n_fmt}/{total_fmt} s"):
             start = time.time()
             while time.time() - start < 1:
-                if label == "idle":
-                    time.sleep(0.1)
-                else:
-                    (x @ x).tanh_()
-            sync(device)
-
-    for label in ("idle", "load"):
-        meter.begin(label)
-        work(label)
+                time.sleep(0.1) if label == "idle" else (x @ x).tanh_()
+        sync(device)
         r = meter.end()
         watts = {k[:-2]: round(r[k] / r["duration_s"], 1) for k in ("cpu_j", "ram_j", "gpu_j", "total_j")}
         log.info(f"{label:5s} W={watts} measured={r['measured']}")
