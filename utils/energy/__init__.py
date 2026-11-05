@@ -15,7 +15,7 @@ class Meter:
         self.cfg, self.ecfg = cfg, cfg["energy"]
         self.raw_dir = Path(raw_dir)
         self.raw_dir.mkdir(parents=True, exist_ok=True)
-        self.segments, self.label = [], None
+        self.segments, self.label, self.closed = [], None, False
 
     def begin(self, label):
         self.label = label
@@ -31,6 +31,9 @@ class Meter:
         return {k: r[k] for k in ("cpu_j", "ram_j", "gpu_j", "total_j", "duration_s", "measured")}
 
     def close(self):
+        if self.closed:
+            return
+        self.closed = True
         self._close()
         (self.raw_dir / "segments.json").write_text(json.dumps(self.segments, indent=1))
 

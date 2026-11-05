@@ -168,35 +168,37 @@ def execute(cfg, run_dir, summary):
     batches = Batches(images, cfg["data"]["batch_size"], device, run["seed"])
     progress, stopper = Progress(batches), Stopper(cfg)
     meter = make_meter(cfg, run_dir / "backend_raw")
-    rec = Recorder(meter, run_dir, progress, device)
-    rec.measure_idle(cfg["energy"]["idle_baseline_s"])
+    try:
+        rec = Recorder(meter, run_dir, progress, device)
+        rec.measure_idle(cfg["energy"]["idle_baseline_s"])
 
-    def evaluate(n, sampler):
-        method.prepare_sampling(images)
-        return fid.score(generate(method, n, sampler, ev["batch_size"], desc=f"FID check [{sampler}]"), ref)
-
-    train_loop(cfg, run_dir, method, batches, progress, stopper, rec, evaluate)
-    method.set_mode(False)
-    if run["model"] == "ae":
-        log.info("Fitting the latent Gaussian used for AE sampling")
-        with rec.segment("train", "gaussian_fit"):
+        def evaluate(n, sampler):
             method.prepare_sampling(images)
-    final_sampler = method.samplers[0]
-    with rec.segment("final_sampling", f"final_{final_sampler}"):
-        final = generate(method, ev["fid_samples"], final_sampler, ev["batch_size"],
-                         desc=f"Final samples [{final_sampler}]")
-    log.info(f"Final samples: {ev['fid_samples']:,} images [{final_sampler}] · {energy_text(rec.last)}")
-    inference, inference_csv = {}, CsvLog(run_dir / "inference.csv")
-    for s in method.samplers:
-        with rec.segment("inference", f"inference_{s}"):
-            n = sample_for_benchmark(method, s, cfg)
-        r = rec.last
-        inference[s] = {"j_per_1k": r["total_j"] / n * 1000, "s_per_1k": r["duration_s"] / n * 1000}
-        inference_csv.write({"sampler": s, "n_images": n, "batch_size": ev["batch_size"],
-                             **{k: r[k] for k in FIELDS[:5]}, **inference[s], "flops_per_image": cap["flops_per_image"][s]})
-        log.info(f"Inference [{s}]: {joules(inference[s]['j_per_1k'])} and {inference[s]['s_per_1k']:.1f} s "
-                 f"per 1,000 images ({n:,} images measured)")
-    meter.close()
+            return fid.score(generate(method, n, sampler, ev["batch_size"], desc=f"FID check [{sampler}]"), ref)
+
+        train_loop(cfg, run_dir, method, batches, progress, stopper, rec, evaluate)
+        method.set_mode(False)
+        if run["model"] == "ae":
+            log.info("Fitting the latent Gaussian used for AE sampling")
+            with rec.segment("train", "gaussian_fit"):
+                method.prepare_sampling(images)
+        final_sampler = method.samplers[0]
+        with rec.segment("final_sampling", f"final_{final_sampler}"):
+            final = generate(method, ev["fid_samples"], final_sampler, ev["batch_size"],
+                             desc=f"Final samples [{final_sampler}]")
+        log.info(f"Final samples: {ev['fid_samples']:,} images [{final_sampler}] · {energy_text(rec.last)}")
+        inference, inference_csv = {}, CsvLog(run_dir / "inference.csv")
+        for s in method.samplers:
+            with rec.segment("inference", f"inference_{s}"):
+                n = sample_for_benchmark(method, s, cfg)
+            r = rec.last
+            inference[s] = {"j_per_1k": r["total_j"] / n * 1000, "s_per_1k": r["duration_s"] / n * 1000}
+            inference_csv.write({"sampler": s, "n_images": n, "batch_size": ev["batch_size"],
+                                 **{k: r[k] for k in FIELDS[:5]}, **inference[s], "flops_per_image": cap["flops_per_image"][s]})
+            log.info(f"Inference [{s}]: {joules(inference[s]['j_per_1k'])} and {inference[s]['s_per_1k']:.1f} s "
+                     f"per 1,000 images ({n:,} images measured)")
+    finally:
+        meter.close()
 
     log.info("Computing final FID and saving outputs")
     final_fid = fid.score(final, ref)
@@ -250,7 +252,8 @@ def train_run(run_dir):
 def group_dir(cfg):
     mode = cfg["stopping"]["mode"]
     target = f"_fid{cfg['stopping']['target_quality']['target_fid']:g}" if mode == "target_quality" else ""
-    return Path(cfg["experiment"]["results_dir"]) / f"{mode}{target}__{cfg['energy']['backend']}"
+    ddim = f"_ddim{cfg['ddpm']['ddim_steps']}" if cfg["ddpm"]["ddim_steps"] else ""
+    return Path(cfg["experiment"]["results_dir"]) / f"{mode}{target}{ddim}__{cfg['energy']['backend']}"
 
 
 def read_run(run_dir):

@@ -7,7 +7,8 @@ from train.base import Method, adam
 
 
 class DDPM(Method):
-    """Ho et al. (2020): epsilon-prediction, LR warmup, gradient clipping, EMA weights for sampling."""
+    """Ho et al. (2020): epsilon-prediction, LR warmup, gradient clipping, EMA weights for sampling.
+    EMA decay warms up as min(decay, (1+n)/(10+n)) so short runs are not dominated by the random init."""
 
     def __init__(self, cfg, device):
         super().__init__(cfg, device)
@@ -19,8 +20,10 @@ class DDPM(Method):
         opt = adam(self.net.parameters(), c)
         self.optimizers = [opt]
         self.scheduler = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / c["warmup_steps"]))
-        self.samplers = [c["final_sampler"]] + [s for s in c["inference_samplers"] if s != c["final_sampler"]]
-        self.eval_sampler = c["eval_sampler"]
+        ddim = [f"ddim_{c['ddim_steps']}"] if c["ddim_steps"] else []
+        self.samplers = ["ancestral"] + ddim
+        self.eval_sampler = self.samplers[-1]
+        self.updates = 0
 
     def networks(self):
         return {"unet": self.net}
@@ -39,9 +42,11 @@ class DDPM(Method):
         torch.nn.utils.clip_grad_norm_(self.net.parameters(), self.c["grad_clip"])
         opt.step()
         self.scheduler.step()
+        decay = min(self.c["ema_decay"], (1 + self.updates) / (10 + self.updates))
+        self.updates += 1
         with torch.no_grad():
             for e, p in zip(self.ema.parameters(), self.net.parameters()):
-                e.lerp_(p, 1 - self.c["ema_decay"])
+                e.lerp_(p, 1 - decay)
         return {"loss": loss.detach()}
 
     def sample(self, n, sampler, progress=False):

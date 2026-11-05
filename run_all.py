@@ -26,6 +26,8 @@ def parse_args():
     for p in (train, analyze):
         p.add_argument("--stopping", choices=STOPPING, help="stopping criterion (default: stopping.mode)")
         p.add_argument("--target-fid", type=float, help="target_quality only (default: stopping.target_quality.target_fid)")
+        p.add_argument("--ddim", type=int, nargs="?", const=100, metavar="STEPS",
+                       help="DDPM: DDIM-STEPS for FID checks + inference (bare flag = 100; default: ddpm.ddim_steps)")
     train.add_argument("--models", nargs="+", choices=sorted(MODELS), help="default: experiment.models")
     train.add_argument("--seeds", nargs="+", type=int, help="default: experiment.seeds")
     train.add_argument("--overwrite", action="store_true", help="re-run finished runs")
@@ -40,6 +42,8 @@ def config_from(args):
         overrides.append(f"stopping.mode={args.stopping}")
     if getattr(args, "target_fid", None) is not None:
         overrides.append(f"stopping.target_quality.target_fid={args.target_fid}")
+    if getattr(args, "ddim", None) is not None:
+        overrides.append(f"ddpm.ddim_steps={args.ddim}")
     if getattr(args, "models", None):
         overrides.append(f"experiment.models=[{', '.join(args.models)}]")
     if getattr(args, "seeds", None):

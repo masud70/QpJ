@@ -48,6 +48,9 @@ def validate(cfg):
     for b in budgets[1:3]:
         if b["unit"] == "energy_j":
             raise ValueError("Segment and eval_every units cannot be energy_j")
+    ddim = cfg["ddpm"]["ddim_steps"]
+    if ddim is not None and not (isinstance(ddim, int) and 1 <= ddim <= cfg["ddpm"]["T"]):
+        raise ValueError("ddpm.ddim_steps must be null or an integer in [1, T]")
     if cfg["energy"]["native"]["poll_s"] < 0.05:
         raise ValueError("energy.native.poll_s must be >= 0.05 s")
 

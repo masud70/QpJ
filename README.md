@@ -14,7 +14,7 @@ Every model uses the canonical architecture and hyperparameters of its original 
 | VAE | Shared encoder (μ, log σ²) and decoder | Gaussian NLL (σ² = 0.5) + KL, β = 1 | Adam 2e-4, β (0.5, 0.999) | Kingma & Welling 2014 |
 | DCGAN | Shared generator and discriminator (BatchNorm) | Non-saturating BCE | Adam 2e-4, β (0.5, 0.999) | Radford et al. 2016 |
 | WGAN-GP | Shared generator; critic uses LayerNorm | Wasserstein + GP, λ = 10, n_critic = 5 | Adam 1e-4, β (0, 0.9) | Gulrajani et al. 2017 |
-| DDPM | U-Net with 35.7M parameters (ch 128, mult 1,2,2,2, attention at 16×16, dropout 0.1) | ε-MSE, T = 1000, linear β schedule | Adam 2e-4, 5k-step warmup, gradient clip 1, EMA 0.9999 | Ho et al. 2020 |
+| DDPM | U-Net with 35.7M parameters (ch 128, mult 1,2,2,2, attention at 16×16, dropout 0.1) | ε-MSE, T = 1000, linear β schedule | Adam 2e-4, 5k-step warmup, gradient clip 1, EMA 0.9999 with warmup min(0.9999, (1+n)/(10+n)) | Ho et al. 2020 |
 
 **Held constant across all models:** dataset and preprocessing (178-pixel center crop, resized to 32×32), batch size 64, FP32, seeds, hardware and the FID protocol.
 
@@ -55,6 +55,7 @@ python run_all.py analyze --backend native --stopping fixed_budget # tables and 
 | `--backend` | `native`, `codecarbon`, `codegreen` | `energy.backend` (`native`) |
 | `--stopping` | `fixed_budget`, `target_quality` | `stopping.mode` (`fixed_budget`) |
 | `--target-fid` | number; `target_quality` only | `stopping.target_quality.target_fid` (25) |
+| `--ddim` | optional step count; bare flag = 100 | `ddpm.ddim_steps` (off) |
 | `--models` | any of `ae vae dcgan wgan_gp ddpm` | all five |
 | `--seeds` | integers, space separated | `42 2026 1337` |
 | `--config` | YAML file merged over `config/default.yaml` | none |
@@ -86,7 +87,9 @@ Only the selected backend runs. Every backend reports the same fields for each s
 ## Stopping criteria
 
 - **`fixed_budget`:** stop at `budget`, given in `epochs | steps | images | wall_clock_s | energy_j`. Training is measured in segments of size `segment`. Energy budgets are checked at segment ends, so a run can overshoot by at most one segment.
-- **`target_quality`:** every `eval_every`, compute FID on `fid_samples` images. Stop when FID ≤ `target_fid` (status `target_reached`), or stop at `max_budget` (status `budget_exhausted`). DDPM's periodic checks use DDIM-100 as a proxy; its final FID always uses 1000-step ancestral sampling.
+- **`target_quality`:** every `eval_every`, compute FID on `fid_samples` images. Stop when FID ≤ `target_fid` (status `target_reached`), or stop at `max_budget` (status `budget_exhausted`). DDPM's final FID always uses 1000-step ancestral sampling.
+
+**DDIM (optional, DDPM only).** By default DDPM samples ancestrally everywhere. With `--ddim N`, DDPM's periodic FID checks use DDIM-N (η = 0) as a cheaper proxy, and the inference benchmark also reports DDIM-N. Training and the final FID are unchanged. Pass the same `--ddim` to `analyze`.
 
 ## References
 
@@ -97,6 +100,7 @@ PDFs of the papers behind each model and method are kept locally in `papers/`, w
 ```
 results/fixed_budget__<backend>/                 fixed budget
 results/target_quality_fid<target>__<backend>/   target quality, one folder per target FID (e.g. target_quality_fid30__native)
+                                                 with --ddim N, "_ddimN" is added before "__<backend>"
   runs/<model>/seed<k>/
     config.yaml           resolved config used
     run.json              summary: environment, capacity, progress, idle power, energy per phase, quality, QpJ, inference

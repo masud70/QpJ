@@ -24,8 +24,7 @@ ddpm:
   ch_mult: [1, 2]
   T: 50
   warmup_steps: 10
-  eval_sampler: ddim_10
-  inference_samplers: [ancestral, ddim_10]
+  ddim_steps: 10
 
 stopping:
   fixed_budget:
