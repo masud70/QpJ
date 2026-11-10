@@ -1,0 +1,20 @@
+Quality per Joule v2 · check · native backend
+host       chickadee-04.cs.umanitoba.ca
+os         Linux-6.8.0-138-generic-x86_64-with-glibc2.35
+kernel     6.8.0-138-generic
+cpu        Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz
+ram_gb     31.06
+gpu        NVIDIA GeForce RTX 2080 SUPER
+driver     580.178.04
+gpu_power_limit_w 250.00
+gpu_max_sm_clock_mhz 2100
+gpu_temperature_c 42
+python     3.10.12
+torch      2.7.1+cu118
+cuda       11.8
+cudnn      90100
+backend_version None
+git_commit 0c5962fab3f75f64ef406c8e5dc469c3b95030ea
+git_dirty  True
+idle  W={'cpu': 5.3, 'ram': 0.6, 'gpu': 40.1, 'total': 45.9} measured={'cpu': True, 'ram': True, 'gpu': True}
+load  W={'cpu': 25.5, 'ram': 0.6, 'gpu': 189.4, 'total': 215.6} measured={'cpu': True, 'ram': True, 'gpu': True}

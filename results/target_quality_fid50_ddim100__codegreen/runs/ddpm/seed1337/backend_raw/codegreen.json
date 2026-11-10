@@ -1,0 +1,318 @@
+{
+  "meta": {
+    "schema_version": "1",
+    "codegreen_version": "0.4.9",
+    "run_id": "153c423c5382",
+    "started_at": "2026-11-08T07:06:06.564699+00:00",
+    "ended_at": "2026-11-08T11:13:25.935083+00:00",
+    "duration_total_s": 14839.370409,
+    "hostname": "chickadee-04.cs.umanitoba.ca",
+    "pid": 812316,
+    "platform": "linux",
+    "python_version": "3.10.12",
+    "cpu_model": "Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz",
+    "kernel": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "cwd": "/home/cs/grad/mazumdmm/QpJE",
+    "argv": [
+      "/home/cs/grad/mazumdmm/QpJE/run_all.py",
+      "_run",
+      "/home/cs/grad/mazumdmm/QpJE/results/target_quality_fid50_ddim100__codegreen/runs/ddpm/seed1337"
+    ],
+    "codegreen_env": {},
+    "measurement_quality": "ok",
+    "domain_support": "full",
+    "outlier_method": "iqr_1.5",
+    "iso_timestamp_format": "rfc3339_utc",
+    "started_at_local": "2026-11-08T02:06:06.564710-05:00",
+    "ended_at_local": "2026-11-08T06:13:25.935091-05:00",
+    "host_timezone": "EST",
+    "nemb_abi_version": 3,
+    "domain_topology": {
+      "package-0": {
+        "top_level": true,
+        "kind": "cpu_package",
+        "includes": [
+          "core",
+          "uncore"
+        ]
+      },
+      "dram": {
+        "top_level": true,
+        "kind": "dram",
+        "includes": []
+      },
+      "gpu0": {
+        "top_level": true,
+        "kind": "gpu",
+        "includes": []
+      },
+      "core": {
+        "top_level": false,
+        "kind": "nested",
+        "includes": []
+      },
+      "uncore": {
+        "top_level": false,
+        "kind": "nested",
+        "includes": []
+      }
+    },
+    "timeseries": {
+      "enabled": false
+    },
+    "session_name": "qpj"
+  },
+  "tasks": [
+    {
+      "name": "idle",
+      "energy_j": 5094.3820912462925,
+      "avg_power_w": 75.38139511622938,
+      "duration_s": 67.581424878,
+      "started_at": 1794121566.5729115,
+      "ended_at": 1794121634.1543813,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 1255.563558,
+        "dram": 39.245993,
+        "gpu0": 3697.19041724629,
+        "package-0": 1357.945681,
+        "uncore": 0.000488
+      },
+      "domains_power_w": {
+        "core": 18.57853042114132,
+        "dram": 0.5807215972561696,
+        "gpu0": 54.70719837470973,
+        "package-0": 20.09347514426344,
+        "uncore": 7.220919074745051e-06
+      },
+      "started_at_mono_ns": 118019460690246,
+      "ended_at_mono_ns": 118087042160764,
+      "timeseries": null,
+      "noise": null
+    },
+    {
+      "name": "train_0",
+      "energy_j": 128264.54341495456,
+      "avg_power_w": 203.90432692746316,
+      "duration_s": 629.042773872,
+      "started_at": 1794121668.6965272,
+      "ended_at": 1794122297.7393022,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 22562.255229,
+        "dram": 408.941519,
+        "gpu0": 104315.308765955,
+        "package-0": 23540.29313,
+        "uncore": 0.009521
+      },
+      "domains_power_w": {
+        "core": 35.86760100608206,
+        "dram": 0.6501012903825408,
+        "gpu0": 165.83182113968846,
+        "package-0": 37.42240449739284,
+        "uncore": 1.5135695687901455e-05
+      },
+      "started_at_mono_ns": 118121584305219,
+      "ended_at_mono_ns": 118750627081474,
+      "timeseries": null,
+      "noise": null
+    },
+    {
+      "name": "eval_0",
+      "energy_j": 122989.75404839899,
+      "avg_power_w": 216.3681633374809,
+      "duration_s": 568.428146504,
+      "started_at": 1794122297.7422824,
+      "ended_at": 1794122866.170431,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 18307.077463,
+        "dram": 348.208825,
+        "gpu0": 103450.989859399,
+        "package-0": 19190.555364,
+        "uncore": 0.007996
+      },
+      "domains_power_w": {
+        "core": 32.20649360098353,
+        "dram": 0.6125819545382939,
+        "gpu0": 181.99484050121896,
+        "package-0": 33.76074088172366,
+        "uncore": 1.4066861483157982e-05
+      },
+      "started_at_mono_ns": 118750630060609,
+      "ended_at_mono_ns": 119319058210505,
+      "timeseries": null,
+      "noise": null
+    },
+    {
+      "name": "train_1",
+      "energy_j": 128254.12270049925,
+      "avg_power_w": 203.88210139638488,
+      "duration_s": 629.060235411,
+      "started_at": 1794122866.1732,
+      "ended_at": 1794123495.2334754,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 22661.320465,
+        "dram": 407.625421,
+        "gpu0": 104207.124446499,
+        "package-0": 23639.372833,
+        "uncore": 0.01062
+      },
+      "domains_power_w": {
+        "core": 36.0240867079988,
+        "dram": 0.6479910794769529,
+        "gpu0": 165.65524027824569,
+        "package-0": 37.578870038661854,
+        "uncore": 1.688232605111554e-05
+      },
+      "started_at_mono_ns": 119319060978583,
+      "ended_at_mono_ns": 119948121254941,
+      "timeseries": null,
+      "noise": null
+    },
+    {
+      "name": "eval_1",
+      "energy_j": 123130.77052609518,
+      "avg_power_w": 216.46970022449287,
+      "duration_s": 568.812958111,
+      "started_at": 1794123495.236174,
+      "ended_at": 1794124064.049167,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 18626.426682,
+        "dram": 352.839734,
+        "gpu0": 103266.384428095,
+        "package-0": 19511.546364,
+        "uncore": 0.007507
+      },
+      "domains_power_w": {
+        "core": 32.74613634657244,
+        "dram": 0.6203088888336221,
+        "gpu0": 181.5471728545665,
+        "package-0": 34.30221848109244,
+        "uncore": 1.3197659956500253e-05
+      },
+      "started_at_mono_ns": 119948123952825,
+      "ended_at_mono_ns": 120516936946843,
+      "timeseries": null,
+      "noise": null
+    },
+    {
+      "name": "final_ancestral",
+      "energy_j": 2440000.902296247,
+      "avg_power_w": 219.4667452942718,
+      "duration_s": 11117.861610535,
+      "started_at": 1794124064.0520391,
+      "ended_at": 1794135181.9136817,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 358978.691852,
+        "dram": 6740.198688,
+        "gpu0": 2057024.92727325,
+        "package-0": 376235.776335,
+        "uncore": 0.195007
+      },
+      "domains_power_w": {
+        "core": 32.288465572537895,
+        "dram": 0.6062495580636803,
+        "gpu0": 185.01983558817338,
+        "package-0": 33.840660148035006,
+        "uncore": 1.7539973677601493e-05
+      },
+      "started_at_mono_ns": 120516939817999,
+      "ended_at_mono_ns": 131634801461239,
+      "timeseries": null,
+      "noise": null
+    },
+    {
+      "name": "inference_ancestral",
+      "energy_j": 241113.95968298195,
+      "avg_power_w": 216.68651187526007,
+      "duration_s": 1112.731741336,
+      "started_at": 1794135181.9164042,
+      "ended_at": 1794136294.6481888,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 35811.071897,
+        "dram": 674.026473,
+        "gpu0": 202902.861214982,
+        "package-0": 37537.071995,
+        "uncore": 0.019653
+      },
+      "domains_power_w": {
+        "core": 32.18302360459627,
+        "dram": 0.6057403127466563,
+        "gpu0": 182.34661030821943,
+        "package-0": 33.734161254294015,
+        "uncore": 1.7661938875225804e-05
+      },
+      "started_at_mono_ns": 131634804182924,
+      "ended_at_mono_ns": 132747535968355,
+      "timeseries": null,
+      "noise": null
+    },
+    {
+      "name": "inference_ddim_100",
+      "energy_j": 24242.42475009756,
+      "avg_power_w": 217.84314345003554,
+      "duration_s": 111.283854824,
+      "started_at": 1794136294.6509993,
+      "ended_at": 1794136405.9348865,
+      "depth": 0,
+      "parent": null,
+      "domains": {
+        "core": 3706.33658099995,
+        "dram": 71.1715710000008,
+        "gpu0": 20291.6353030973,
+        "package-0": 3879.617876,
+        "uncore": 0.00238100000000002
+      },
+      "domains_power_w": {
+        "core": 33.30524977645386,
+        "dram": 0.639549835082201,
+        "gpu0": 182.34123301344437,
+        "package-0": 34.862360601506616,
+        "uncore": 2.13957361898154e-05
+      },
+      "started_at_mono_ns": 132747538778119,
+      "ended_at_mono_ns": 132858822665851,
+      "timeseries": null,
+      "noise": null
+    }
+  ],
+  "totals": {
+    "energy_j": 3213090.8595105205,
+    "duration_s": 14804.802745470999,
+    "wall_duration_s": 14839.370408562012,
+    "task_duration_s": 14804.802745470999,
+    "gap_duration_s": 34.56742511401171,
+    "concurrent_overlap_s": 0.0,
+    "n_tasks": 8,
+    "n_top_level_tasks": 8,
+    "domains": {
+      "core": 481908.74372699996,
+      "dram": 9042.258224000001,
+      "gpu0": 2699156.4217085233,
+      "package-0": 504892.179578,
+      "uncore": 0.25317300000000004
+    },
+    "domains_power_w": {
+      "core": 32.55083853612455,
+      "dram": 0.6107651942047089,
+      "gpu0": 182.31627047744584,
+      "package-0": 34.103269611778764,
+      "uncore": 1.7100734427376904e-05
+    },
+    "sample_interval_ms": null,
+    "worst_within_task_power_cv_percent": null,
+    "noise_warnings": []
+  }
+}

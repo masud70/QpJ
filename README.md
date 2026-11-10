@@ -2,19 +2,19 @@
 
 A controlled comparison of the energy efficiency of five generative model families (AE, VAE, DCGAN, WGAN-GP and DDPM) on CelebA at 32×32.
 
-Every model uses the canonical architecture and hyperparameters of its original publication. Energy is measured per segment for CPU, RAM and GPU, using one of three interchangeable backends.
+Every model is trained with the objective of its original publication. AE, VAE, DCGAN and WGAN-GP share the DCGAN architecture; DDPM keeps its original U-Net. Energy is measured per segment for CPU, RAM and GPU, using one of three interchangeable backends.
 
 ## Design
 
-**Shared backbone.** The AE/VAE decoder and both GAN generators are the same Radford et al. (2016) generator. The AE/VAE encoder, the DCGAN discriminator and the WGAN-GP critic are the same mirrored encoder. Energy differences between these four models therefore reflect the training paradigm rather than network capacity.
+**Shared backbone.** The AE/VAE decoder and both GAN generators are the same Radford et al. (2016) generator at 32×32 (channel widths 256 → 128 → 64). The AE/VAE encoder, the DCGAN discriminator and the WGAN-GP critic are the same mirrored encoder. Energy differences between these four models therefore reflect the training paradigm rather than network capacity. The original AE and VAE networks are small fully connected models designed for MNIST and are not competitive on 32×32 colour faces, so they are replaced by the shared convolutional backbone (as in Ghosh et al. 2020). DDPM cannot share a GAN backbone and keeps its original U-Net; its larger capacity is reported as parameters and FLOPs.
 
-| Model | Architecture | Objective | Optimizer | Reference |
-|---|---|---|---|---|
-| AE | Shared encoder/decoder, z = 128. Samples are drawn from a full-covariance Gaussian fitted to the training latents. | Summed squared error | Adam 2e-4, β (0.5, 0.999) | Hinton & Salakhutdinov 2006; Ghosh et al. 2020 |
-| VAE | Shared encoder (μ, log σ²) and decoder | Gaussian NLL (σ² = 0.5) + KL, β = 1 | Adam 2e-4, β (0.5, 0.999) | Kingma & Welling 2014 |
-| DCGAN | Shared generator and discriminator (BatchNorm) | Non-saturating BCE | Adam 2e-4, β (0.5, 0.999) | Radford et al. 2016 |
-| WGAN-GP | Shared generator; critic uses LayerNorm | Wasserstein + GP, λ = 10, n_critic = 5 | Adam 1e-4, β (0, 0.9) | Gulrajani et al. 2017 |
-| DDPM | U-Net with 35.7M parameters (ch 128, mult 1,2,2,2, attention at 16×16, dropout 0.1) | ε-MSE, T = 1000, linear β schedule | Adam 2e-4, 5k-step warmup, gradient clip 1, EMA 0.9999 with warmup min(0.9999, (1+n)/(10+n)) | Ho et al. 2020 |
+| Model | Architecture | Arch. source | Objective | Optimizer | Reference |
+|---|---|---|---|---|---|
+| AE | Shared encoder/decoder, z = 128. Samples are drawn from a full-covariance Gaussian fitted to the training latents. | Shared (DCGAN); original was fully connected | Summed squared error | Adam 2e-4, β (0.5, 0.999) (DCGAN settings) | Hinton & Salakhutdinov 2006; Ghosh et al. 2020 |
+| VAE | Shared encoder (μ, log σ²) and decoder | Shared (DCGAN); original was fully connected | Gaussian NLL (σ² = 0.5, matching the AE's squared error) + KL, β = 1 | Adam 2e-4, β (0.5, 0.999) (DCGAN settings) | Kingma & Welling 2014 |
+| DCGAN | Generator and discriminator (BatchNorm) | Original, scaled to 32×32 | Non-saturating BCE | Adam 2e-4, β (0.5, 0.999) | Radford et al. 2016 |
+| WGAN-GP | Shared generator; critic uses LayerNorm | Shared (DCGAN); the paper's DCGAN-style variant, LayerNorm as recommended | Wasserstein + GP, λ = 10, n_critic = 5 | Adam 1e-4, β (0, 0.9) | Gulrajani et al. 2017 |
+| DDPM | U-Net with 35.7M parameters (ch 128, mult 1,2,2,2, attention at 16×16, dropout 0.1) | Original (CIFAR-10 configuration) | ε-MSE, T = 1000, linear β schedule | Adam 2e-4, 5k-step warmup, gradient clip 1, EMA 0.9999 with warmup min(0.9999, (1+n)/(10+n)) | Ho et al. 2020 |
 
 **Held constant across all models:** dataset and preprocessing (178-pixel center crop, resized to 32×32), batch size 64, FP32, seeds, hardware and the FID protocol.
 

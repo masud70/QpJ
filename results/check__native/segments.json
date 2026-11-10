@@ -1,0 +1,36 @@
+[
+ {
+  "label": "idle",
+  "cpu_j": 52.82420500000001,
+  "ram_j": 6.121627000000004,
+  "gpu_j": 401.71500000000015,
+  "duration_s": 10.026095575999989,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "intel-rapl:0:package-0": 52.82420500000001,
+   "intel-rapl:0:2:dram": 6.121627000000004
+  },
+  "total_j": 460.66083200000014
+ },
+ {
+  "label": "load",
+  "cpu_j": 270.5735260000001,
+  "ram_j": 6.8760809999999895,
+  "gpu_j": 2007.8809999999976,
+  "duration_s": 10.598617421999961,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "intel-rapl:0:package-0": 270.5735260000001,
+   "intel-rapl:0:2:dram": 6.8760809999999895
+  },
+  "total_j": 2285.3306069999976
+ }
+]

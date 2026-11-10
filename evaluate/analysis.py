@@ -8,7 +8,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, NullFormatter
 
 ORDER = ["ae", "vae", "dcgan", "wgan_gp", "ddpm"]
 NAMES = {"ae": "AE", "vae": "VAE", "dcgan": "DCGAN", "wgan_gp": "WGAN-GP", "ddpm": "DDPM"}
@@ -16,16 +16,18 @@ COLORS = dict(zip(ORDER, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"]
 MARKERS = dict(zip(ORDER, "osD^v"))
 COMPONENTS = {"cpu_j": ("CPU", "#2a78d6"), "ram_j": ("RAM", "#eb6834"), "gpu_j": ("GPU", "#1baf7a")}
 INK, INK2, MUTED, GRID, AXIS, SURFACE = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7", "#fcfcfb"
+SHORT = {"ancestral": "A", "ddim_100": "D"}                 # DDPM sampler tags; full names go in the caption
 DONE = {"completed", "target_reached", "budget_exhausted"}
 PLAIN = FuncFormatter(lambda v, _: f"{v:,g}")
+COMPACT = FuncFormatter(lambda v, _: next((f"{v / d:g}{u}" for u, d in (("M", 1e6), ("k", 1e3)) if v >= d), f"{v:g}"))
 
 plt.rcParams.update({
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE, "savefig.dpi": 200,
     "axes.edgecolor": AXIS, "axes.labelcolor": INK2, "axes.titlecolor": INK, "axes.titleweight": "bold",
     "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "axes.axisbelow": True,
     "grid.color": GRID, "grid.linewidth": 1, "xtick.color": MUTED, "ytick.color": MUTED,
-    "xtick.labelcolor": INK2, "ytick.labelcolor": INK2, "text.color": INK, "font.size": 10,
-    "lines.linewidth": 2, "legend.frameon": False,
+    "xtick.labelcolor": INK2, "ytick.labelcolor": INK2, "text.color": INK, "font.size": 14,
+    "lines.linewidth": 3, "legend.frameon": False,
 })
 
 
@@ -88,20 +90,33 @@ def fmt_j(joules):
 
 def save(fig, path):
     fig.tight_layout()
-    fig.savefig(path)
+    fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
 
 
-def bar_chart(labels, values, xlabel, title, path, fmt):
+def plain_log(axis):
+    """Plain-number tick labels on a log axis; on short ranges also label minor ticks at 2x and 5x."""
+    lo, hi = sorted(axis.get_view_interval())
+    axis.set_major_formatter(COMPACT if hi / lo >= 1e4 else PLAIN)
+    some = FuncFormatter(lambda v, _: f"{v:,g}" if f"{v:e}"[0] in "25" else "")
+    axis.set_minor_formatter(some if hi / lo < 100 else NullFormatter())
+
+
+def legend_inside(ax, ncol=1):
+    ax.legend(loc="best", ncol=ncol, frameon=True, facecolor=SURFACE, edgecolor="none", framealpha=0.9,
+              columnspacing=1, handlelength=1.5)
+
+
+def bar_chart(labels, values, colors, xlabel, path, fmt):
     fig, ax = plt.subplots(figsize=(6.5, 0.5 * len(labels) + 1.2))
     y = range(len(labels))[::-1]
-    ax.barh(y, values, height=0.6, color=COLORS["ae"])
-    ax.set(yticks=list(y), yticklabels=labels, xscale="log", xlabel=xlabel, title=title)
-    ax.xaxis.set_major_formatter(PLAIN)
+    ax.barh(y, values, height=0.6, color=colors)
+    ax.set(yticks=list(y), yticklabels=labels, xscale="log", xlabel=xlabel)
     ax.grid(axis="y", visible=False)
     for yi, v in zip(y, values):
         ax.annotate(fmt(v), (v, yi), xytext=(4, 0), textcoords="offset points", va="center", color=INK2)
     ax.margins(x=0.15)
+    plain_log(ax.xaxis)
     save(fig, path)
 
 
@@ -111,13 +126,12 @@ def plot_fid_vs_energy(summary, path):
         m, x, y = s["model"], s["train_total_j_mean"] / 1e3, s["final_fid_mean"]
         ax.errorbar(x, y, xerr=num(s["train_total_j_std"]) / 1e3, yerr=num(s["final_fid_std"]), fmt="none",
                     elinewidth=1, ecolor=COLORS[m])
-        ax.plot(x, y, MARKERS[m], color=COLORS[m], ms=9, mec=SURFACE, mew=2, label=NAMES[m])
+        ax.plot(x, y, MARKERS[m], color=COLORS[m], ms=13, mec=SURFACE, mew=2, label=NAMES[m])
         ax.annotate(NAMES[m], (x, y), xytext=(9, 6), textcoords="offset points", color=INK2)
-    ax.set(xscale="log", xlabel="Training energy (kJ, log scale)", ylabel="Final FID (lower is better)",
-           title="Quality vs training energy")
-    ax.xaxis.set_major_formatter(PLAIN)
+    ax.set(xscale="log", xlabel="Training energy (kJ, log scale)", ylabel="Final FID (lower is better)")
     ax.margins(x=0.15, y=0.1)
-    ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
+    plain_log(ax.xaxis)
+    legend_inside(ax)
     save(fig, path)
 
 
@@ -132,10 +146,9 @@ def plot_energy_breakdown(summary, path):
     for yi, total in zip(y, left):
         ax.annotate(fmt_j(total * 1e3), (total, yi), xytext=(4, 0), textcoords="offset points", va="center", color=INK2)
     ax.set(yticks=list(y), yticklabels=[NAMES[s["model"]] for s in summary], xlabel="Training energy (kJ)")
-    ax.set_title("Training energy by component", pad=28)
     ax.grid(axis="y", visible=False)
     ax.margins(x=0.12)
-    ax.legend(ncol=3, loc="lower left", bbox_to_anchor=(0, 1.02), handlelength=1)
+    legend_inside(ax)
     save(fig, path)
 
 
@@ -149,17 +162,18 @@ def read_csv(path):
         return list(csv.DictReader(f))
 
 
-def plot_lines(series, xlabel, ylabel, title, path, hline=None, log=True):
+def plot_lines(series, xlabel, ylabel, path, hline=None, log=True):
     fig, ax = plt.subplots(figsize=(6.5, 4.5))
     for m, (x, y) in series.items():
-        ax.plot(x, y, color=COLORS[m], marker=MARKERS[m], ms=5, label=NAMES[m])
+        ax.plot(x, y, color=COLORS[m], marker=MARKERS[m], ms=7, label=NAMES[m])
     if hline is not None:
         ax.axhline(hline, color=MUTED, linewidth=1)
-        ax.annotate(f"target FID {hline:g}", (0, hline), xycoords=("axes fraction", "data"), xytext=(4, 4),
-                    textcoords="offset points", color=MUTED)
-    ax.set(yscale="log" if log else "linear", xlabel=xlabel, ylabel=ylabel, title=title)
-    ax.yaxis.set_major_formatter(PLAIN)
-    ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
+        ax.annotate(f"target\nFID {hline:g}", (1, hline), xycoords=("axes fraction", "data"), xytext=(6, 0),
+                    textcoords="offset points", color=MUTED, ha="left", va="center", annotation_clip=False)
+    ax.set(yscale="log" if log else "linear", xlabel=xlabel, ylabel=ylabel)
+    if log:
+        plain_log(ax.yaxis)
+    legend_inside(ax, ncol=2)
     save(fig, path)
 
 
@@ -190,27 +204,30 @@ def analyze(group):
     out = group / "summary"
     plots = out / "plots"
     plots.mkdir(parents=True, exist_ok=True)
+    for old in plots.glob("*.png"):
+        old.unlink()
     rows = [run_row(r) for r in runs]
     summary = summarize(rows)
     write_csv(out / "runs.csv", rows)
     write_csv(out / "summary.csv", summary)
 
-    plot_fid_vs_energy(summary, plots / "fid_vs_energy.png")
-    plot_energy_breakdown(summary, plots / "energy_breakdown.png")
-    plot_lines(model_curves(runs, train_energy_curve), "Epoch", "Cumulative training energy (kJ, log scale)",
-               "Training energy over epochs", plots / "cumulative_energy.png")
+    plot_fid_vs_energy(summary, plots / "fid_vs_energy.pdf")
+    plot_energy_breakdown(summary, plots / "energy_breakdown.pdf")
+    plot_lines(model_curves(runs, train_energy_curve), "Epoch", "Cumulative energy (kJ, log scale)",
+               plots / "cumulative_energy.pdf")
     infer = {}
     for r in runs:
         for sampler, v in r["inference"].items():
             infer.setdefault((r["model"], sampler), []).append(v["j_per_1k"])
-    labels = [NAMES[m] if s == "direct" else f"{NAMES[m]} · {s}" for m, s in infer]
-    bar_chart(labels, [statistics.mean(v) for v in infer.values()], "Energy per 1,000 images (J, log scale)",
-              "Inference energy", plots / "inference_energy.png", lambda v: f"{v:,.1f} J")
+    labels = [NAMES[m] if s == "direct" else f"{NAMES[m]}-{SHORT.get(s, s)}" for m, s in infer]
+    bar_chart(labels, [statistics.mean(v) for v in infer.values()], [COLORS[m] for m, _ in infer],
+              "Energy per 1,000 images (J, log scale)", plots / "inference_energy.pdf",
+              lambda v: f"{v:,.1f} J")
     bar_chart([NAMES[s["model"]] for s in summary], [s["qpj_train_mean"] for s in summary],
-              "QpJ = 1 / (FID × training energy in J), log scale", "Quality per Joule (higher is better)",
-              plots / "qpj.png", lambda v: f"{v:.2e}")
+              [COLORS[s["model"]] for s in summary], "QpJ, higher is better (log scale)",
+              plots / "qpj.pdf", lambda v: f"{v:.2e}")
     if all((r["dir"] / "fid_history.csv").exists() for r in runs):
         target = runs[0]["stopping"]["target_fid"]
-        plot_lines(model_curves(runs, fid_curve), "Epoch", "FID at periodic check", "FID during training",
-                   plots / "fid_vs_epoch.png", hline=target, log=False)
+        plot_lines(model_curves(runs, fid_curve), "Epoch", "FID at periodic check",
+                   plots / "fid_vs_epoch.pdf", hline=target, log=False)
     print(f"Wrote {out / 'runs.csv'}, {out / 'summary.csv'} and plots in {plots}")
