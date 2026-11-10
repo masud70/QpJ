@@ -8,6 +8,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter, NullFormatter
 
 ORDER = ["ae", "vae", "dcgan", "wgan_gp", "ddpm"]
@@ -152,6 +153,32 @@ def plot_energy_breakdown(summary, path):
     save(fig, path)
 
 
+def plot_energy_fid(summary, path):
+    """Two bars per model, each metric normalized to its own maximum, real values printed on top."""
+    metrics = [("train_total_j", "Training energy", None, fmt_j), ("final_fid", "Final FID", "//", lambda v: f"{v:.1f}")]
+    models, width = [s["model"] for s in summary], 0.38
+    fig, ax = plt.subplots(figsize=(7.2, 4.5))
+    for i, (key, label, hatch, fmt) in enumerate(metrics):
+        means, stds = [s[f"{key}_mean"] for s in summary], [num(s[f"{key}_std"]) for s in summary]
+        top = max(means)
+        xs = [j + (i - 0.5) * width for j in range(len(models))]
+        ax.bar(xs, [m / top * 100 for m in means], width, yerr=[sd / top * 100 for sd in stds], hatch=hatch,
+               color=[COLORS[m] for m in models], edgecolor=SURFACE, linewidth=1,
+               error_kw={"ecolor": INK2, "elinewidth": 1, "capsize": 3})
+        for x, m, sd in zip(xs, means, stds):
+            ax.annotate(fmt(m), (x, (m + sd) / top * 100), xytext=(0, 7), textcoords="offset points",
+                        ha="center", va="bottom", rotation=90, fontsize=13, color=INK2)
+    handles = [Patch(facecolor=MUTED, edgecolor=SURFACE, hatch=h, label=l) for _, l, h, _ in metrics]
+    ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, fontsize=16)
+    ax.set(xticks=range(len(models)), xticklabels=[NAMES[m] for m in models], ylim=(0, 128))
+    ax.set_ylabel("% of the highest model", fontsize=16)
+    ax.set_yticks(range(0, 101, 25))
+    ax.spines["left"].set_bounds(0, 100)
+    ax.tick_params(labelsize=16)
+    ax.grid(axis="x", visible=False)
+    save(fig, path)
+
+
 def mean_curve(curves):
     n = min(len(c) for c in curves)
     return [statistics.mean(c[i] for c in curves) for i in range(n)]
@@ -168,8 +195,6 @@ def plot_lines(series, xlabel, ylabel, path, hline=None, log=True):
         ax.plot(x, y, color=COLORS[m], marker=MARKERS[m], ms=7, label=NAMES[m])
     if hline is not None:
         ax.axhline(hline, color=MUTED, linewidth=1)
-        ax.annotate(f"target\nFID {hline:g}", (1, hline), xycoords=("axes fraction", "data"), xytext=(6, 0),
-                    textcoords="offset points", color=MUTED, ha="left", va="center", annotation_clip=False)
     ax.set(yscale="log" if log else "linear", xlabel=xlabel, ylabel=ylabel)
     if log:
         plain_log(ax.yaxis)
@@ -213,6 +238,7 @@ def analyze(group):
 
     plot_fid_vs_energy(summary, plots / "fid_vs_energy.pdf")
     plot_energy_breakdown(summary, plots / "energy_breakdown.pdf")
+    plot_energy_fid(summary, plots / "energy_fid.pdf")
     plot_lines(model_curves(runs, train_energy_curve), "Epoch", "Cumulative energy (kJ, log scale)",
                plots / "cumulative_energy.pdf")
     infer = {}
