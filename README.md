@@ -1,4 +1,4 @@
-# Quality per Joule v2
+# Quality per Joule
 
 A controlled comparison of the energy efficiency of five generative model families (AE, VAE, DCGAN, WGAN-GP and DDPM) on CelebA at 32×32.
 
