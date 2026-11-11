@@ -67,14 +67,9 @@ experiment:
   device: cuda
   log_every_steps: 100
   models:
-  - ae
-  - vae
-  - dcgan
   - wgan_gp
   results_dir: /home/cs/grad/mazumdmm/QpJE/results
   seeds:
-  - 42
-  - 1337
   - 2026
 model:
   latent_dim: 128

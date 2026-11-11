@@ -10,10 +10,11 @@ data/cache_smoke/
 results_smoke/
 papers/
 figure/
-result_linux/
+result_linux*
 check_codecarbon/
 *codecarbon*
 *fid40*
 *fid60*
 stdout.log
 correct*
+results2
