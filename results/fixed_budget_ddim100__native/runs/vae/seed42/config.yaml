@@ -1,0 +1,117 @@
+ae:
+  betas:
+  - 0.5
+  - 0.999
+  fit_samples: 20000
+  lr: 0.0002
+data:
+  batch_size: 32
+  cache_dir: /home/cs/grad/mazumdmm/QpJE/data/cache
+  center_crop: 178
+  hf_revision: 2d738f56e0e7f925ea36ae7c808ea925264aacec
+  image_size: 32
+  root: /home/cs/grad/mazumdmm/QpJE/data/celeba
+  source: celeba
+  synthetic_size: 512
+dcgan:
+  betas:
+  - 0.5
+  - 0.999
+  lr: 0.0002
+ddpm:
+  T: 1000
+  attn_resolutions:
+  - 16
+  beta_end: 0.02
+  beta_start: 0.0001
+  betas:
+  - 0.9
+  - 0.999
+  ch: 128
+  ch_mult:
+  - 1
+  - 2
+  - 2
+  - 2
+  ddim_steps: null
+  dropout: 0.1
+  ema_decay: 0.9999
+  grad_clip: 1.0
+  lr: 0.0002
+  num_res_blocks: 2
+  warmup_steps: 5000
+energy:
+  backend: native
+  codecarbon:
+    country_iso_code: CAN
+    measure_power_secs: 1
+    region: manitoba
+    tracking_mode: machine
+  codegreen:
+    sample_interval_ms: 100
+  gpu_index: 0
+  idle_baseline_s: 60
+  native:
+    poll_s: 0.05
+    rapl_root: /sys/class/powercap
+  ram_w_per_gb: 0.375
+evaluation:
+  batch_size: 250
+  fid_ref_samples: 50000
+  fid_samples: 10000
+  inference_images: 1000
+  inference_min_s: 30
+experiment:
+  cooldown_s: 120
+  cudnn_benchmark: false
+  device: cuda
+  log_every_steps: 100
+  models:
+  - ae
+  - vae
+  - dcgan
+  - wgan_gp
+  results_dir: /home/cs/grad/mazumdmm/QpJE/results
+  seeds:
+  - 42
+  - 1337
+  - 2026
+model:
+  latent_dim: 128
+  ndf: 64
+  ngf: 64
+run:
+  model: vae
+  seed: 42
+stopping:
+  fixed_budget:
+    budget:
+      unit: epochs
+      value: 30
+    segment:
+      unit: epochs
+      value: 1
+  mode: fixed_budget
+  target_quality:
+    eval_every:
+      unit: epochs
+      value: 1
+    fid_samples: 5000
+    max_budget:
+      unit: epochs
+      value: 100
+    target_fid: 25.0
+vae:
+  beta: 1.0
+  betas:
+  - 0.5
+  - 0.999
+  decoder_var: 0.5
+  lr: 0.0002
+wgan_gp:
+  betas:
+  - 0.0
+  - 0.9
+  lambda_gp: 10.0
+  lr: 0.0001
+  n_critic: 5

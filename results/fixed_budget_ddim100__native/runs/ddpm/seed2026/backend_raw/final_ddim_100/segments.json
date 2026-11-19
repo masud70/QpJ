@@ -1,0 +1,19 @@
+[
+ {
+  "label": "final_ddim_100",
+  "cpu_j": 30017.696041999945,
+  "ram_j": 647.7865500000138,
+  "gpu_j": 164052.21899999678,
+  "duration_s": 1110.0376887340099,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "intel-rapl:0:package-0": 30017.696041999945,
+   "intel-rapl:0:2:dram": 647.7865500000138
+  },
+  "total_j": 194717.70159199674
+ }
+]

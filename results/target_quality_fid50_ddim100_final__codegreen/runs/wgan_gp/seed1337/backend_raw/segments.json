@@ -1,0 +1,342 @@
+[
+ {
+  "label": "idle",
+  "cpu_j": 2045.077894,
+  "ram_j": 58.054905,
+  "gpu_j": 5439.53254226852,
+  "duration_s": 100.0665715,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 1893.316747,
+   "dram": 58.054905,
+   "gpu0": 5439.53254226852,
+   "package-0": 2045.077894,
+   "uncore": 0.001587
+  },
+  "total_j": 7542.66534126852
+ },
+ {
+  "label": "train_0",
+  "cpu_j": 2756.074549,
+  "ram_j": 29.090929,
+  "gpu_j": 4732.79928438093,
+  "duration_s": 42.50661473,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 2696.080684,
+   "dram": 29.090929,
+   "gpu0": 4732.79928438093,
+   "package-0": 2756.074549,
+   "uncore": 0.000915
+  },
+  "total_j": 7517.96476238093
+ },
+ {
+  "label": "eval_0",
+  "cpu_j": 487.447849,
+  "ram_j": 10.597019,
+  "gpu_j": 1747.09255109956,
+  "duration_s": 12.090065314,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 468.285605,
+   "dram": 10.597019,
+   "gpu0": 1747.09255109956,
+   "package-0": 487.447849,
+   "uncore": 0
+  },
+  "total_j": 2245.1374190995602
+ },
+ {
+  "label": "train_1",
+  "cpu_j": 2703.178321,
+  "ram_j": 28.614368,
+  "gpu_j": 4803.33206587669,
+  "duration_s": 41.633415781,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 2645.537844,
+   "dram": 28.614368,
+   "gpu0": 4803.33206587669,
+   "package-0": 2703.178321,
+   "uncore": 0.000488
+  },
+  "total_j": 7535.12475487669
+ },
+ {
+  "label": "eval_1",
+  "cpu_j": 480.003349000001,
+  "ram_j": 10.29575,
+  "gpu_j": 1710.79359684415,
+  "duration_s": 11.781163632,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 461.334085,
+   "dram": 10.29575,
+   "gpu0": 1710.79359684415,
+   "package-0": 480.003349000001,
+   "uncore": 0.000306
+  },
+  "total_j": 2201.092695844151
+ },
+ {
+  "label": "train_2",
+  "cpu_j": 2744.077082,
+  "ram_j": 28.789721,
+  "gpu_j": 4793.39063492356,
+  "duration_s": 41.952359597,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 2685.4468,
+   "dram": 28.789721,
+   "gpu0": 4793.39063492356,
+   "package-0": 2744.077082,
+   "uncore": 0.000732
+  },
+  "total_j": 7566.25743792356
+ },
+ {
+  "label": "eval_2",
+  "cpu_j": 505.908982999999,
+  "ram_j": 10.433262,
+  "gpu_j": 1715.8834844239,
+  "duration_s": 11.872908423,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 487.074009,
+   "dram": 10.433262,
+   "gpu0": 1715.8834844239,
+   "package-0": 505.908982999999,
+   "uncore": 0
+  },
+  "total_j": 2232.225729423899
+ },
+ {
+  "label": "train_3",
+  "cpu_j": 2752.767672,
+  "ram_j": 29.749313,
+  "gpu_j": 4800.4820032,
+  "duration_s": 41.793279653,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 2694.404784,
+   "dram": 29.749313,
+   "gpu0": 4800.4820032,
+   "package-0": 2752.767672,
+   "uncore": 0.001099
+  },
+  "total_j": 7582.998988199999
+ },
+ {
+  "label": "eval_3",
+  "cpu_j": 488.229401999999,
+  "ram_j": 10.586338,
+  "gpu_j": 1719.753176275,
+  "duration_s": 11.853617035,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 469.531635000001,
+   "dram": 10.586338,
+   "gpu0": 1719.753176275,
+   "package-0": 488.229401999999,
+   "uncore": 0
+  },
+  "total_j": 2218.568916274999
+ },
+ {
+  "label": "train_4",
+  "cpu_j": 2719.76617,
+  "ram_j": 28.417713,
+  "gpu_j": 4791.07724690296,
+  "duration_s": 41.424532185,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 2662.44753,
+   "dram": 28.417713,
+   "gpu0": 4791.07724690296,
+   "package-0": 2719.76617,
+   "uncore": 0.000854
+  },
+  "total_j": 7539.2611299029595
+ },
+ {
+  "label": "eval_4",
+  "cpu_j": 485.044534999997,
+  "ram_j": 10.484776,
+  "gpu_j": 1721.89953462806,
+  "duration_s": 11.763856076,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 466.331631000001,
+   "dram": 10.484776,
+   "gpu0": 1721.89953462806,
+   "package-0": 485.044534999997,
+   "uncore": 0
+  },
+  "total_j": 2217.428845628057
+ },
+ {
+  "label": "train_5",
+  "cpu_j": 2709.562948,
+  "ram_j": 28.473621,
+  "gpu_j": 4809.17614683916,
+  "duration_s": 41.606739697,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 2651.894639,
+   "dram": 28.473621,
+   "gpu0": 4809.17614683916,
+   "package-0": 2709.562948,
+   "uncore": 0.001648
+  },
+  "total_j": 7547.2127158391595
+ },
+ {
+  "label": "eval_5",
+  "cpu_j": 492.948078999998,
+  "ram_j": 10.602512,
+  "gpu_j": 1735.15666083616,
+  "duration_s": 11.974997217,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 473.966254999999,
+   "dram": 10.602512,
+   "gpu0": 1735.15666083616,
+   "package-0": 492.948078999998,
+   "uncore": 0
+  },
+  "total_j": 2238.707251836158
+ },
+ {
+  "label": "train_6",
+  "cpu_j": 2746.89226,
+  "ram_j": 28.696154,
+  "gpu_j": 4821.32912208383,
+  "duration_s": 41.829237044,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 2688.793715,
+   "dram": 28.696154,
+   "gpu0": 4821.32912208383,
+   "package-0": 2746.89226,
+   "uncore": 0.001038
+  },
+  "total_j": 7596.917536083831
+ },
+ {
+  "label": "eval_6",
+  "cpu_j": 499.090275000002,
+  "ram_j": 10.434848,
+  "gpu_j": 1725.7259020637,
+  "duration_s": 11.818797843,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 480.325491,
+   "dram": 10.434848,
+   "gpu0": 1725.7259020637,
+   "package-0": 499.090275000002,
+   "uncore": 0
+  },
+  "total_j": 2235.251025063702
+ },
+ {
+  "label": "final_direct",
+  "cpu_j": 4.89366399999926,
+  "ram_j": 0.125792999999987,
+  "gpu_j": 15.4956051803238,
+  "duration_s": 0.160702918,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 5.19090499999947,
+   "dram": 0.125792999999987,
+   "gpu0": 15.4956051803238,
+   "package-0": 4.89366399999926,
+   "uncore": 0
+  },
+  "total_j": 20.51506218032305
+ },
+ {
+  "label": "inference_direct",
+  "cpu_j": 1008.293134,
+  "ram_j": 18.021255,
+  "gpu_j": 5163.4093318465,
+  "duration_s": 30.210439765,
+  "measured": {
+   "cpu": true,
+   "ram": true,
+   "gpu": true
+  },
+  "domains": {
+   "core": 962.376382000002,
+   "dram": 18.021255,
+   "gpu0": 5163.4093318465,
+   "package-0": 1008.293134,
+   "uncore": 0.000975999999999999
+  },
+  "total_j": 6189.7237208465
+ }
+]

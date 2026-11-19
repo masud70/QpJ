@@ -18,3 +18,4 @@ check_codecarbon/
 stdout.log
 correct*
 results2
+ddim_final

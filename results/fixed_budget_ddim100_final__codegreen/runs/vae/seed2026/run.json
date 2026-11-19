@@ -1,0 +1,108 @@
+{
+  "model": "vae",
+  "seed": 2026,
+  "backend": "codegreen",
+  "stopping": {
+    "mode": "fixed_budget",
+    "budget": {
+      "unit": "epochs",
+      "value": 30
+    },
+    "segment": {
+      "unit": "epochs",
+      "value": 1
+    }
+  },
+  "status": "completed",
+  "environment": {
+    "host": "chickadee-04.cs.umanitoba.ca",
+    "os": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "kernel": "6.8.0-138-generic",
+    "cpu": "Intel(R) Core(TM) i7-9700K CPU @ 3.60GHz",
+    "ram_gb": 31.06,
+    "gpu": "NVIDIA GeForce RTX 2080 SUPER",
+    "driver": "580.178.04",
+    "gpu_power_limit_w": "250.00",
+    "gpu_max_sm_clock_mhz": "2100",
+    "gpu_temperature_c": "47",
+    "python": "3.10.12",
+    "torch": "2.7.1+cu118",
+    "cuda": "11.8",
+    "cudnn": 90100,
+    "backend_version": "0.4.9",
+    "git_commit": "0c5962fab3f75f64ef406c8e5dc469c3b95030ea",
+    "git_dirty": true,
+    "started_at": "2026-11-09T13:02:35+00:00",
+    "ended_at": "2026-11-09T13:20:12+00:00"
+  },
+  "capacity": {
+    "params": {
+      "total": 2891648,
+      "per_network": {
+        "vae": 2891648
+      }
+    },
+    "flops_per_train_step": 6996099072,
+    "flops_per_image": {
+      "direct": 36175872
+    }
+  },
+  "progress": {
+    "steps": 152597,
+    "images_seen": 4883104,
+    "epochs": 30.0,
+    "train_time_s": 837.07
+  },
+  "idle_power_w": {
+    "cpu": 20.385719193645013,
+    "ram": 0.5778984460239874,
+    "gpu": 53.888033188843174,
+    "total": 74.85165082851218
+  },
+  "energy": {
+    "train": {
+      "duration_s": 713.6329159719999,
+      "cpu_j": 46108.38885399999,
+      "ram_j": 474.366095,
+      "gpu_j": 81446.53859985711,
+      "total_j": 128029.29354885708,
+      "net_total_j": 74612.69170278798,
+      "measured": {
+        "cpu": true,
+        "ram": true,
+        "gpu": true
+      }
+    },
+    "final_sampling": {
+      "duration_s": 0.177452534,
+      "cpu_j": 5.7811739999961,
+      "ram_j": 0.126280999999949,
+      "gpu_j": 22.1190457025659,
+      "total_j": 28.026500702561947,
+      "net_total_j": 14.743885588959262,
+      "measured": {
+        "cpu": true,
+        "ram": true,
+        "gpu": true
+      }
+    }
+  },
+  "quality": {
+    "final_fid": 50.78304038523669,
+    "final_fid_samples": 10000,
+    "final_sampler": "direct",
+    "recon_mse": 0.021083506103605033,
+    "target_reached_at": null
+  },
+  "qpj": {
+    "train": 1.5380553061618458e-07,
+    "train_eval": 1.5380553061618458e-07,
+    "train_inference": 1.537718688871229e-07
+  },
+  "inference": {
+    "direct": {
+      "j_per_1k": 2.8047101486611608,
+      "s_per_1k": 0.013893243231175996
+    }
+  }
+}
